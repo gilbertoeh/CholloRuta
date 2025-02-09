@@ -1,0 +1,133 @@
+<!-- src/app/app.component.html -->
+
+<div class="container">
+  <!-- imagen que he diseñado -->
+  <div class="logo-container">
+    <img src="assets/cholloruta-logo.jpg" alt="Logo CholloRuta" class="logo-img" />
+  </div>
+
+
+  <header>
+    <h1>{{ title }}</h1>
+    <p>Tu buscador de carburante al mejor precio</p>
+  </header>
+
+  <section class="input-section">
+    <h2>Entrada de Datos</h2>
+    <p *ngIf="userLocation">
+      Ubicación detectada (aprox):
+      <strong>Lat: {{ userLocation.lat }}, Lon: {{ userLocation.lon }}</strong>
+    </p>
+
+    <label>
+      Filtrar por tipo de carburante:
+      <input
+        type="text"
+        [(ngModel)]="filterCarburante"
+        (input)="onChangeFiltroCarburante()"
+        placeholder="ej: 95, Diesel"
+      />
+    </label>
+
+    <label>
+      Radio de búsqueda (km):
+      <input type="number" [(ngModel)]="ratioBusqueda" />
+    </label>
+
+    <!-- Botones para ver "5 más cercanas" o "5 más baratas" -->
+    <button (click)="calcularGasolinerasMasCercanas()">
+      Calcular 5 más cercanas
+    </button>
+    <button (click)="listarTop5CombustiblesMasBaratos()">
+      Ordenar por combustible más barato (Top 5)
+    </button>
+  </section>
+
+  <section class="output-section">
+    <h2>Resultados</h2>
+
+    <!-- 1) Lista de 5 gasolineras más cercanas -->
+    <div *ngIf="gasolinerasMasCercanas.length > 0">
+      <h3>5 gasolineras más cercanas</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Distancia (km)</th>
+            <th>Combustibles</th>
+            <th>Horario</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of gasolinerasMasCercanas">
+            <td>{{ item.gasolinera.nombre }}</td>
+            <td>{{ item.gasolinera.empresa }}</td>
+            <td>{{ item.distancia | number:'1.2-2' }}</td>
+            <td>
+              <ul>
+                <li *ngFor="let c of item.gasolinera.combustibles">
+                  {{ c.nombre }} ({{ c.precio }} €/L)
+                </li>
+              </ul>
+            </td>
+            <td>{{ item.gasolinera.horario }}</td>
+            <td>
+              <button (click)="verRutaGasolinera(item.gasolinera)">Ver ruta</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2) Lista de 5 combustibles más baratos -->
+    <div *ngIf="combustiblesMasBaratos.length > 0">
+      <h3>5 combustibles más baratos</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Gasolinera</th>
+            <th>Empresa</th>
+            <th>Distancia (km)</th>
+            <th>Combustible</th>
+            <th>Precio (€/L)</th>
+            <th>Horario</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of combustiblesMasBaratos">
+            <td>{{ item.gasolinera.nombre }}</td>
+            <td>{{ item.gasolinera.empresa }}</td>
+            <td>{{ item.distancia | number:'1.2-2' }}</td>
+            <td>{{ item.nombreComb }}</td>
+            <td>{{ item.precioComb }}</td>
+            <td>{{ item.gasolinera.horario }}</td>
+            <td>
+              <button (click)="verRutaGasolinera(item.gasolinera)">Ver ruta</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mensaje si no hay nada que mostrar -->
+    <div *ngIf="gasolinerasMasCercanas.length === 0 && combustiblesMasBaratos.length === 0">
+      <p>No se encontraron gasolineras en el radio de {{ ratioBusqueda }} km,
+         o no hay coincidencia con el filtro de carburante.</p>
+    </div>
+
+    <!-- Mapa Leaflet -->
+    <div id="map" class="map-container"></div>
+  </section>
+
+  <footer>
+    <p>
+      Elaborado por: 
+      <a href="https://github.com/gilbertoeh" target="_blank">
+        https://github.com/gilbertoeh
+      </a>
+    </p>
+  </footer>
+</div>
