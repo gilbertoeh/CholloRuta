@@ -24,6 +24,3 @@ Para ejecutar el proyecto en local:
 ```bash
 npm install
 ng serve
-
-## Estado del proyecto
-Proyecto académico y formativo, útil como base para seguir mejorando la integración con servicios externos y el desarrollo de aplicaciones web basadas en localización.
